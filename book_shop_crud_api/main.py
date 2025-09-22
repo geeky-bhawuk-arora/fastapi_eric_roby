@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from uuid import UUID
 
@@ -26,15 +26,27 @@ def create_book(book: Book):
     list_books.append(book)
     return book
 
-@app.
+@app.put("/{book_id}")
 def update_book(book_id: UUID, book: Book):
     counter = 0
     for x in list_books:
         counter += 1
         if x.id == book_id:
-            list[counter-1] = book
+            list_books[counter-1] = book
             return list_books[counter-1]
     raise HTTPException (
         status_code=404,
         detail=f"Id {book_id}: Does not exist !!"
+    )
+
+@app.delete("/{book_id}")
+def delete_book(book_id: UUID):
+    counter = 0
+    for x in list_books:
+        if x.id == book_id:
+            del list_books[counter-1]
+            return f"Id: {book_id} deleted"
+    raise HTTPException (
+        status_code=404,
+        detail=f"Id {book_id} : Does not exist"
     )
